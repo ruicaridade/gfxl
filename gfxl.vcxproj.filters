@@ -470,12 +470,6 @@
     <ClCompile Include="src\gfxl_graphics_opengl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gfxl\glm\detail\dummy.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="gfxl\glm\detail\glm.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="gfxl\glm\detail\func_common.inl">

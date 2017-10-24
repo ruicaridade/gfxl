@@ -7,20 +7,61 @@
 
 static HDC hDC;
 
+using namespace gfxl;
+
+Camera* camera;
+Mesh* mesh;
+Shader* shader;
+
 bool Init()
 {
+	mesh = AllocMesh();
+	shader = AllocShader();
+	camera = AllocCamera();
 
+	if (!AttachSourceAndCompile(shader, "glsl/gfxl.vs", ShaderType::Vertex))
+		OutputDebugStringA(GetError());
+
+	if (!AttachSourceAndCompile(shader, "glsl/gfxl.fs", ShaderType::Fragment))
+		OutputDebugStringA(GetError());
+
+	if (!LinkShader(shader))
+		OutputDebugStringA(GetError());
+
+	Vertex vertices[]
+	{
+		Vertex { Vector3(-0.5f, -0.5f, 0) },
+		Vertex { Vector3(0.5f, -0.5f, 0) },
+		Vertex { Vector3(0, 0.5f, 0) }
+	};
+
+	UploadDataToMesh(mesh, vertices, 3, nullptr, 0);
+
+	camera->position = Vector3(0, 0, -5);
+	SetCameraToPerspective(camera, 45.0f, 1600.0f / 900.0f, 0.1f, 1000.0f);
+	UpdateCamera(camera);
 	return true;
 }
 
 void Render()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glClearColor(1, 0, 0, 1);
+	glClearColor(0.35f, 0.1f, 0.27f, 1);
+
+	Bind(shader);
+	Render(mesh);
+}
+
+void Dispose()
+{
+	Dispose(mesh);
+	Dispose(shader);
+	Dispose(camera);
 }
 
 void Resize(int width, int height, float aspectRatio)
 {
+	glViewport(0, 0, width, height);
 }
 
 LRESULT CALLBACK WndProc(
@@ -132,8 +173,8 @@ int CALLBACK WinMain(
 		WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
 		CW_USEDEFAULT,
 		CW_USEDEFAULT,
-		800,
-		600,
+		1600,
+		900,
 		NULL,
 		NULL,
 		hInstance,
@@ -167,5 +208,6 @@ int CALLBACK WinMain(
 		SwapBuffers(hDC);
 	}
 
+	Dispose();
 	return msg.wParam;
 }

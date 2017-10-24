@@ -20,28 +20,56 @@ namespace gfxl
 	{
 		Vector3 position;
 		Vector3 normal;
-		Vector3 texcoord;
+		Vector2 texcoord;
 	};
-
+	
 	struct Shader;
 	struct Mesh;
 
-	enum class ShaderType
+	struct CameraImpl;
+	struct Camera
+	{
+		Vector3 position;
+		Vector3 lookAt;
+		CameraImpl* impl;
+	};
+
+	enum class ShaderType : int
 	{
 		Vertex,
 		Fragment,
 		Geometry
 	};
 
-	void ShaderAttach(Shader* shader, const char* filename, ShaderType type);
-	void ShaderCompile(Shader* shader);
-	void ShaderUse(Shader* shader);
-	void ShaderDispose(Shader* shader);
+	enum class Primitive : int
+	{
+		Triangles
+	};
 
-	void MeshData(Mesh* mesh,
+	// TODO: Move this to Common, perhaps.
+	const char* GetError();
+
+	Camera* AllocCamera();
+	Mesh* AllocMesh();
+	Shader* AllocShader();
+
+	bool AttachSourceAndCompile(Shader* shader, const char* filename, ShaderType type);
+	bool LinkShader(Shader* shader);
+	
+	void UploadDataToMesh(Mesh* mesh,
 		Vertex* vertices, uint32 vertexCount,
 		uint32* indices, uint32 indexCount);
-	void MeshDispose(Mesh* mesh);
+
+	void UpdateCamera(Camera* camera);
+	void SetCameraToPerspective(Camera* camera, float fov, float aspectRatio, float near, float far);
+
+	void Bind(Shader* shader);
+	
+	void Render(Mesh* mesh, Primitive primitive = Primitive::Triangles);
+
+	void Dispose(Shader* shader);
+	void Dispose(Mesh* mesh);
+	void Dispose(Camera* camera);
 }
 
 #endif
