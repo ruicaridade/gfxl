@@ -13,4 +13,10 @@ typedef int64_t		long64;
 typedef float		float32;
 typedef double		double64;
 
+namespace gfxl
+{
+	void ErrorSetCallback(void(*callback)(const char*));
+	void Error(const char* info);
+}
+
 #endif

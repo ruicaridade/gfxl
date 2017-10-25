@@ -4,18 +4,16 @@
 #include <string>
 #include <fstream>
 #include <stdio.h>
-#include <gfxl.h>
 
 #pragma comment (lib, "opengl32.lib")
 #include <glad\glad.h>
 
+#include <gfxl.h>
 #include <glm\gtc\type_ptr.hpp>
 #include <glm\gtc\matrix_transform.hpp>
 
 namespace gfxl
 {
-	static char error[1024];
-
 	struct Shader
 	{
 		GLuint id;
@@ -31,17 +29,17 @@ namespace gfxl
 		GLuint vertexCount;
 		GLuint indexCount;
 	};
+	
+	struct Texture
+	{
+		GLuint id;
+	};
 
 	struct CameraImpl
 	{
 		uint32 uniformBuffer;
 		Matrix4 projection;
 	};
-
-	const char* GetError()
-	{
-		return error;
-	}
 
 	Camera* AllocCamera()
 	{
@@ -60,7 +58,12 @@ namespace gfxl
 		return new Shader();
 	}
 
-	bool AttachSourceAndCompile(Shader* shader, const char* filename, ShaderType type)
+	Texture * AllocTexture()
+	{
+		return new Texture();
+	}
+
+	bool ShaderLoadAndCompile(Shader* shader, const char* filename, ShaderType type)
 	{
 		GLenum glType = 0;
 		if (type == ShaderType::Vertex)
@@ -85,7 +88,9 @@ namespace gfxl
 
 		if (!success)
 		{
-			glGetShaderInfoLog(id, 1024, nullptr, error);
+			char info[1024];
+			glGetShaderInfoLog(id, 1024, nullptr, info);
+			Error(info);
 			glDeleteShader(id);
 			return false;
 		}
@@ -94,7 +99,7 @@ namespace gfxl
 		return true;
 	}
 
-	bool LinkShader(Shader* shader)
+	bool ShaderLink(Shader* shader)
 	{
 		shader->id = glCreateProgram();
 
@@ -108,7 +113,9 @@ namespace gfxl
 
 		if (!success)
 		{
-			glGetProgramInfoLog(shader->id, 1024, nullptr, error);
+			char info[1024];
+			glGetProgramInfoLog(shader->id, 1024, nullptr, info);
+			Error(info);
 			glDeleteProgram(shader->id);
 
 			for (auto src : shader->sources)
@@ -124,20 +131,106 @@ namespace gfxl
 		return true;
 	}
 
-	void Bind(Shader* shader)
+	void MeshLoadFromModel(Mesh* mesh, const char * filename)
 	{
-		if (shader == nullptr)
+		FILE *file = fopen(filename, "r");
+		if (file == nullptr)
 		{
-			glUseProgram(0);
+			Error("[ERROR] File not found");
 			return;
 		}
 
-		glUseProgram(shader->id);
+		std::vector<Vector3> positions;
+		std::vector<Vector3> normals;
+		std::vector<Vector2> uvs;
+
+		std::vector<Vertex> vertices;
+
+		while (true)
+		{
+			char header[16];
+			int cursor = fscanf(file, "%s", header);
+
+			if (cursor == EOF)
+				break;
+
+			if (strcmp(header, "v") == 0)
+			{
+				Vector3 position;
+				fscanf(file, "%f %f %f\n", &position.x, &position.y, &position.z);
+				positions.push_back(position);
+			}
+			else if (strcmp(header, "vn") == 0)
+			{
+				Vector3 normal;
+				fscanf(file, "%f %f %f\n", &normal.x, &normal.y, &normal.z);
+				normals.push_back(normal);
+			}
+			else if (strcmp(header, "vt") == 0)
+			{
+				Vector2 uv;
+				fscanf(file, "%f %f\n", &uv.x, &uv.y);
+				uvs.push_back(uv);
+			}
+			else if (strcmp(header, "s") == 0)
+			{
+				char ignore[8];
+				fgets(ignore, sizeof(ignore), file);
+				printf(ignore);
+			}
+			else if (strcmp(header, "f") == 0)
+			{
+				char line[128];
+				fgets(line, sizeof(line), file);
+
+				int vp[3];
+				int vt[3];
+				int vn[3];
+
+				int count = sscanf(line, "%d/%d/%d %d/%d/%d %d/%d/%d\n",
+					&vp[0], &vt[0], &vn[0],
+					&vp[1], &vt[1], &vn[1],
+					&vp[2], &vt[2], &vn[2]);
+				
+				bool hasTexCoords = count == 9;
+				if (!hasTexCoords)
+				{
+					int count = sscanf(line, "%d//%d %d//%d %d//%d\n",
+						&vp[0], &vn[0],
+						&vp[1], &vn[1],
+						&vp[2], &vn[2]);
+				}
+
+				Vertex v[3];
+				v[0].position = positions[vp[0] - 1];
+				v[1].position = positions[vp[1] - 1];
+				v[2].position = positions[vp[2] - 1];
+
+				if (hasTexCoords)
+				{
+					v[0].texcoord = uvs[vt[0] - 1];
+					v[1].texcoord = uvs[vt[1] - 1];
+					v[2].texcoord = uvs[vt[2] - 1];
+				}
+
+				v[0].normal = normals[vn[0] - 1];
+				v[1].normal = normals[vn[1] - 1];
+				v[2].normal = normals[vn[2] - 1];
+
+				vertices.push_back(v[0]);
+				vertices.push_back(v[1]);
+				vertices.push_back(v[2]);
+			}
+		}
+
+		MeshUploadData(mesh,
+			vertices.data(), vertices.size(),
+			nullptr, 0);
 	}
 
-	void UploadDataToMesh(Mesh* mesh,
-		Vertex* vertices, uint32 vertexCount,
-		uint32* indices, uint32 indexCount)
+	void MeshUploadData(Mesh* mesh,
+		const Vertex* vertices, uint32 vertexCount,
+		const uint32* indices, uint32 indexCount)
 	{
 		glGenVertexArrays(1, &mesh->vertexArray);
 		glBindVertexArray(mesh->vertexArray);
@@ -168,7 +261,7 @@ namespace gfxl
 		mesh->indexCount = indexCount;
 	}
 
-	void UpdateCamera(Camera* camera)
+	void CameraUpdate(Camera* camera)
 	{
 		if (!camera->impl->uniformBuffer)
 		{
@@ -198,9 +291,20 @@ namespace gfxl
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	}
 
-	void SetCameraToPerspective(Camera* camera, float fov, float aspectRatio, float nearPlane, float farPlane)
+	void CameraSetToPerspective(Camera* camera, float fov, float aspectRatio, float nearPlane, float farPlane)
 	{
 		camera->impl->projection = glm::perspective(fov, aspectRatio, nearPlane, farPlane);
+	}
+
+	void Bind(Shader* shader)
+	{
+		if (shader == nullptr)
+		{
+			glUseProgram(0);
+			return;
+		}
+
+		glUseProgram(shader->id);
 	}
 
 	void Render(Mesh* mesh, Primitive primitive)
@@ -244,6 +348,12 @@ namespace gfxl
 	{
 		delete camera->impl;
 		delete camera;
+	}
+
+	void Dispose(Texture * texture)
+	{
+		glDeleteTextures(1, &texture->id);
+		delete texture;
 	}
 }
 

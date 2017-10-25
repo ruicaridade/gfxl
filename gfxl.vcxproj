@@ -288,6 +288,7 @@
     <ClInclude Include="gfxl\glm\vector_relational.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\gfxl_common.cpp" />
     <ClCompile Include="src\glad\glad.c" />
     <ClCompile Include="src\win32_editor.cpp" />
     <ClCompile Include="src\gfxl_graphics_opengl.cpp" />
@@ -409,6 +410,8 @@
     <None Include="gfxl\glm\gtx\vector_angle.inl" />
     <None Include="gfxl\glm\gtx\vector_query.inl" />
     <None Include="gfxl\glm\gtx\wrap.inl" />
+    <None Include="glsl\gfxl.fs" />
+    <None Include="glsl\gfxl.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

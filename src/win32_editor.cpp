@@ -13,33 +13,46 @@ Camera* camera;
 Mesh* mesh;
 Shader* shader;
 
+inline void ReloadShader()
+{
+	shader = AllocShader();
+	ShaderLoadAndCompile(shader, "glsl/gfxl.vs", ShaderType::Vertex);
+	ShaderLoadAndCompile(shader, "glsl/gfxl.fs", ShaderType::Fragment);
+	ShaderLink(shader);
+}
+
+void ParseError(const char* info)
+{
+	OutputDebugStringA(info);
+}
+
 bool Init()
 {
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+	glFrontFace(GL_CCW);
+
+	ErrorSetCallback(ParseError);
+
 	mesh = AllocMesh();
-	shader = AllocShader();
 	camera = AllocCamera();
 
-	if (!AttachSourceAndCompile(shader, "glsl/gfxl.vs", ShaderType::Vertex))
-		OutputDebugStringA(GetError());
+	ReloadShader();
 
-	if (!AttachSourceAndCompile(shader, "glsl/gfxl.fs", ShaderType::Fragment))
-		OutputDebugStringA(GetError());
+	//Vertex vertices[]
+	//{
+	//	Vertex { Vector3(-0.5f, -0.5f, 0) },
+	//	Vertex { Vector3(0.5f, -0.5f, 0) },
+	//	Vertex { Vector3(0, 0.5f, 0) }
+	//};
 
-	if (!LinkShader(shader))
-		OutputDebugStringA(GetError());
+	//MeshUploadData(mesh, vertices, 3, nullptr, 0);
 
-	Vertex vertices[]
-	{
-		Vertex { Vector3(-0.5f, -0.5f, 0) },
-		Vertex { Vector3(0.5f, -0.5f, 0) },
-		Vertex { Vector3(0, 0.5f, 0) }
-	};
-
-	UploadDataToMesh(mesh, vertices, 3, nullptr, 0);
+	MeshLoadFromModel(mesh, "assets/sphere.obj");
 
 	camera->position = Vector3(0, 0, -5);
-	SetCameraToPerspective(camera, 45.0f, 1600.0f / 900.0f, 0.1f, 1000.0f);
-	UpdateCamera(camera);
+	CameraSetToPerspective(camera, 45.0f, 1600.0f / 900.0f, 0.1f, 1000.0f);
+	CameraUpdate(camera);
 	return true;
 }
 
@@ -59,6 +72,15 @@ void Dispose()
 	Dispose(camera);
 }
 
+void KeyPress(int key)
+{
+	if (key == VK_F1)
+	{
+		Dispose(shader);
+		ReloadShader();
+	}
+}
+
 void Resize(int width, int height, float aspectRatio)
 {
 	glViewport(0, 0, width, height);
@@ -74,6 +96,11 @@ LRESULT CALLBACK WndProc(
 
 	switch (msg)
 	{
+	case WM_KEYDOWN:
+	{
+		KeyPress((int)wParam);
+	} break;
+
 	case WM_CREATE:
 	{
 		static PIXELFORMATDESCRIPTOR pfd = {

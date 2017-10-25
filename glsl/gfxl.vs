@@ -27,5 +27,7 @@ void main()
 	//gl_Position = vec4(VPosition, 1.0);
     // vsOutput.normal = mat3(transpose(inverse(model))) * VNormal;
     // vsOutput.position = vec3(model * vec4(VPosition, 1.0));
+	vsOutput.normal = VNormal;
     vsOutput.texcoord = VTexCoord;
+	vsOutput.position = VPosition;
 }  

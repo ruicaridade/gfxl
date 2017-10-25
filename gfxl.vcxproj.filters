@@ -470,6 +470,9 @@
     <ClCompile Include="src\gfxl_graphics_opengl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\gfxl_common.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="gfxl\glm\detail\func_common.inl">
@@ -820,5 +823,7 @@
     <None Include="gfxl\glm\gtx\wrap.inl">
       <Filter>Header Files</Filter>
     </None>
+    <None Include="glsl\gfxl.vs" />
+    <None Include="glsl\gfxl.fs" />
   </ItemGroup>
 </Project>

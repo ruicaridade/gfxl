@@ -25,7 +25,8 @@ namespace gfxl
 	
 	struct Shader;
 	struct Mesh;
-
+	struct Texture;
+	
 	struct CameraImpl;
 	struct Camera
 	{
@@ -46,22 +47,21 @@ namespace gfxl
 		Triangles
 	};
 
-	// TODO: Move this to Common, perhaps.
-	const char* GetError();
-
 	Camera* AllocCamera();
 	Mesh* AllocMesh();
 	Shader* AllocShader();
+	Texture* AllocTexture();
 
-	bool AttachSourceAndCompile(Shader* shader, const char* filename, ShaderType type);
-	bool LinkShader(Shader* shader);
+	bool ShaderLoadAndCompile(Shader* shader, const char* filename, ShaderType type);
+	bool ShaderLink(Shader* shader);
 	
-	void UploadDataToMesh(Mesh* mesh,
-		Vertex* vertices, uint32 vertexCount,
-		uint32* indices, uint32 indexCount);
+	void MeshLoadFromModel(Mesh* mesh, const char* filename);
+	void MeshUploadData(Mesh* mesh,
+		const Vertex* vertices, uint32 vertexCount,
+		const uint32* indices, uint32 indexCount);
 
-	void UpdateCamera(Camera* camera);
-	void SetCameraToPerspective(Camera* camera, float fov, float aspectRatio, float near, float far);
+	void CameraUpdate(Camera* camera);
+	void CameraSetToPerspective(Camera* camera, float fov, float aspectRatio, float nearPlane, float farPlane);
 
 	void Bind(Shader* shader);
 	
@@ -70,6 +70,7 @@ namespace gfxl
 	void Dispose(Shader* shader);
 	void Dispose(Mesh* mesh);
 	void Dispose(Camera* camera);
+	void Dispose(Texture* texture);
 }
 
 #endif
