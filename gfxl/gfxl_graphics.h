@@ -25,7 +25,7 @@ namespace gfxl
 	
 	struct Shader;
 	struct Mesh;
-	struct Texture;
+	struct Texture2D;
 	
 	struct CameraImpl;
 	struct Camera
@@ -50,7 +50,7 @@ namespace gfxl
 	Camera* AllocCamera();
 	Mesh* AllocMesh();
 	Shader* AllocShader();
-	Texture* AllocTexture();
+	Texture2D* AllocTexture2D();
 
 	bool ShaderLoadAndCompile(Shader* shader, const char* filename, ShaderType type);
 	bool ShaderLink(Shader* shader);
@@ -69,14 +69,18 @@ namespace gfxl
 	void CameraUpdate(Camera* camera);
 	void CameraSetToPerspective(Camera* camera, float fov, float aspectRatio, float nearPlane, float farPlane);
 
+	void Texture2DFromImageFile(Texture2D* texture, const char* filename);
+	void Texture2DGetSize(const Texture2D* texture, int* width, int* height);
+
 	void Bind(const Shader* shader);
+	void Bind(const Texture2D* texture, int index);
 	
 	void Render(const Mesh* mesh, Primitive primitive = Primitive::Triangles);
 
 	void Dispose(Shader* shader);
 	void Dispose(Mesh* mesh);
 	void Dispose(Camera* camera);
-	void Dispose(Texture* texture);
+	void Dispose(Texture2D* texture);
 }
 
 #endif

@@ -11,6 +11,7 @@
 #include <gfxl.h>
 #include <glm\gtc\type_ptr.hpp>
 #include <glm\gtc\matrix_transform.hpp>
+#include <stb_image.h>
 
 namespace gfxl
 {
@@ -30,9 +31,11 @@ namespace gfxl
 		GLuint indexCount;
 	};
 	
-	struct Texture
+	struct Texture2D
 	{
 		GLuint id;
+		int width;
+		int height;
 	};
 
 	struct CameraImpl
@@ -58,9 +61,9 @@ namespace gfxl
 		return new Shader();
 	}
 
-	Texture * AllocTexture()
+	Texture2D * AllocTexture2D()
 	{
-		return new Texture();
+		return new Texture2D();
 	}
 
 	bool ShaderLoadAndCompile(Shader* shader, const char* filename, ShaderType type)
@@ -340,6 +343,41 @@ namespace gfxl
 		camera->impl->projection = glm::perspective(fov, aspectRatio, nearPlane, farPlane);
 	}
 
+	void Texture2DFromImageFile(Texture2D* texture, const char * filename)
+	{
+		glGenTextures(1, &texture->id);
+		glBindTexture(GL_TEXTURE_2D, texture->id);
+
+		int channels;
+		unsigned char* data = stbi_load(filename, &texture->width, &texture->height, &channels, STBI_rgb_alpha);
+
+		if (!data)
+		{
+			Error("Failed to load image file.");
+			glDeleteTextures(1, &texture->id);
+			return;
+		}
+
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture->width, texture->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+		glGenerateMipmap(GL_TEXTURE_2D);
+
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+
+	void Texture2DGetSize(const Texture2D* texture, int* width, int* height)
+	{
+		*width = texture->width;
+		*height = texture->height;
+	}
+
 	void Bind(const Shader* shader)
 	{
 		if (shader == nullptr)
@@ -349,6 +387,12 @@ namespace gfxl
 		}
 
 		glUseProgram(shader->id);
+	}
+
+	void Bind(const Texture2D* texture, int index)
+	{
+		glActiveTexture(GL_TEXTURE0 + index);
+		glBindTexture(GL_TEXTURE_2D, texture->id);
 	}
 
 	void Render(const Mesh* mesh, Primitive primitive)
@@ -394,7 +438,7 @@ namespace gfxl
 		delete camera;
 	}
 
-	void Dispose(Texture * texture)
+	void Dispose(Texture2D* texture)
 	{
 		glDeleteTextures(1, &texture->id);
 		delete texture;
