@@ -131,6 +131,42 @@ namespace gfxl
 		return true;
 	}
 
+	void ShaderSetVar(const Shader* shader, const char * name, const Vector2& value)
+	{
+		int location = glGetUniformLocation(shader->id, name);
+		glUniform2fv(location, 1, glm::value_ptr(value));
+	}
+
+	void ShaderSetVar(const Shader* shader, const char * name, const Vector3& value)
+	{
+		int location = glGetUniformLocation(shader->id, name);
+		glUniform3fv(location, 1, glm::value_ptr(value));
+	}
+
+	void ShaderSetVar(const Shader* shader, const char * name, const Vector4& value)
+	{
+		int location = glGetUniformLocation(shader->id, name);
+		glUniform4fv(location, 1, glm::value_ptr(value));
+	}
+
+	void ShaderSetVar(const Shader* shader, const char * name, const Matrix4& value)
+	{
+		int location = glGetUniformLocation(shader->id, name);
+		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
+	}
+
+	void ShaderSetVar(const Shader* shader, const char * name, float value)
+	{
+		int location = glGetUniformLocation(shader->id, name);
+		glUniform1f(location, value);
+	}
+
+	void ShaderSetVar(const Shader* shader, const char * name, int value)
+	{
+		int location = glGetUniformLocation(shader->id, name);
+		glUniform1i(location, value);
+	}
+
 	void MeshLoadFromModel(Mesh* mesh, const char * filename)
 	{
 		FILE *file = fopen(filename, "r");
@@ -265,11 +301,13 @@ namespace gfxl
 	{
 		if (!camera->impl->uniformBuffer)
 		{
+			uint32 size = sizeof(Matrix4) * 2 + sizeof(Vector3);
+
 			glGenBuffers(1, &camera->impl->uniformBuffer);
 			glBindBuffer(GL_UNIFORM_BUFFER, camera->impl->uniformBuffer);
-			glBufferData(GL_UNIFORM_BUFFER, sizeof(Matrix4) * 2, nullptr, GL_DYNAMIC_DRAW);
+			glBufferData(GL_UNIFORM_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
 			glBindBuffer(GL_UNIFORM_BUFFER, 0);
-			glBindBufferRange(GL_UNIFORM_BUFFER, 0, camera->impl->uniformBuffer, 0, sizeof(Matrix4) * 2);
+			glBindBufferRange(GL_UNIFORM_BUFFER, 0, camera->impl->uniformBuffer, 0, size);
 		}
 
 		glBindBuffer(GL_UNIFORM_BUFFER, camera->impl->uniformBuffer);
@@ -288,6 +326,12 @@ namespace gfxl
 			sizeof(Matrix4),
 			glm::value_ptr(camera->impl->projection));
 
+		glBufferSubData(
+			GL_UNIFORM_BUFFER,
+			sizeof(Matrix4) * 2,
+			sizeof(Vector3),
+			glm::value_ptr(camera->position));
+
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	}
 
@@ -296,7 +340,7 @@ namespace gfxl
 		camera->impl->projection = glm::perspective(fov, aspectRatio, nearPlane, farPlane);
 	}
 
-	void Bind(Shader* shader)
+	void Bind(const Shader* shader)
 	{
 		if (shader == nullptr)
 		{
@@ -307,7 +351,7 @@ namespace gfxl
 		glUseProgram(shader->id);
 	}
 
-	void Render(Mesh* mesh, Primitive primitive)
+	void Render(const Mesh* mesh, Primitive primitive)
 	{
 		GLenum glPrimitive = 0;
 		if (primitive == Primitive::Triangles)

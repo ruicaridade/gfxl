@@ -54,6 +54,12 @@ namespace gfxl
 
 	bool ShaderLoadAndCompile(Shader* shader, const char* filename, ShaderType type);
 	bool ShaderLink(Shader* shader);
+	void ShaderSetVar(const Shader* shader, const char* name, const Vector2& value);
+	void ShaderSetVar(const Shader* shader, const char* name, const Vector3& value);
+	void ShaderSetVar(const Shader* shader, const char* name, const Vector4& value);
+	void ShaderSetVar(const Shader* shader, const char* name, const Matrix4& value);
+	void ShaderSetVar(const Shader* shader, const char* name, float value);
+	void ShaderSetVar(const Shader* shader, const char* name, int value);
 	
 	void MeshLoadFromModel(Mesh* mesh, const char* filename);
 	void MeshUploadData(Mesh* mesh,
@@ -63,9 +69,9 @@ namespace gfxl
 	void CameraUpdate(Camera* camera);
 	void CameraSetToPerspective(Camera* camera, float fov, float aspectRatio, float nearPlane, float farPlane);
 
-	void Bind(Shader* shader);
+	void Bind(const Shader* shader);
 	
-	void Render(Mesh* mesh, Primitive primitive = Primitive::Triangles);
+	void Render(const Mesh* mesh, Primitive primitive = Primitive::Triangles);
 
 	void Dispose(Shader* shader);
 	void Dispose(Mesh* mesh);

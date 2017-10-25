@@ -19,6 +19,13 @@ inline void ReloadShader()
 	ShaderLoadAndCompile(shader, "glsl/gfxl.vs", ShaderType::Vertex);
 	ShaderLoadAndCompile(shader, "glsl/gfxl.fs", ShaderType::Fragment);
 	ShaderLink(shader);
+
+	Bind(shader);
+	ShaderSetVar(shader, "LightAmbient", Vector3(0.25f, 0.1f, 0.1f));
+	ShaderSetVar(shader, "LightSpecularPower", 64);
+	ShaderSetVar(shader, "LightSpecularStrength", 0.5f);
+	ShaderSetVar(shader, "LightPosition", Vector3(1, 1, -1.7f));
+	ShaderSetVar(shader, "LightColor", Vector3(1, 0.72f, 0.08f));
 }
 
 void ParseError(const char* info)
@@ -28,6 +35,7 @@ void ParseError(const char* info)
 
 bool Init()
 {
+	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 	glFrontFace(GL_CCW);
@@ -38,15 +46,6 @@ bool Init()
 	camera = AllocCamera();
 
 	ReloadShader();
-
-	//Vertex vertices[]
-	//{
-	//	Vertex { Vector3(-0.5f, -0.5f, 0) },
-	//	Vertex { Vector3(0.5f, -0.5f, 0) },
-	//	Vertex { Vector3(0, 0.5f, 0) }
-	//};
-
-	//MeshUploadData(mesh, vertices, 3, nullptr, 0);
 
 	MeshLoadFromModel(mesh, "assets/sphere.obj");
 
@@ -61,7 +60,6 @@ void Render()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(0.35f, 0.1f, 0.27f, 1);
 
-	Bind(shader);
 	Render(mesh);
 }
 

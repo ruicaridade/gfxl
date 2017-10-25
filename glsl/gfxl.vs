@@ -14,6 +14,7 @@ layout (std140) uniform UCamera
 {
     mat4 view;
     mat4 projection;
+	vec3 position;
 } Camera;
 
 //uniform mat4 projection;
