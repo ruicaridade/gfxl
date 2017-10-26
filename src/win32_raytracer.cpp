@@ -1,5 +1,3 @@
-#if 0
-
 #include <stdio.h>
 
 #include <Windows.h>
@@ -11,23 +9,16 @@ static HDC hDC;
 
 using namespace gfxl;
 
-Camera* camera;
 Mesh* mesh;
 Shader* shader;
 
 inline void ReloadShader()
 {
 	shader = AllocShader();
-	ShaderLoadAndCompile(shader, "glsl/gfxl.vs", ShaderType::Vertex);
-	ShaderLoadAndCompile(shader, "glsl/gfxl.fs", ShaderType::Fragment);
+	ShaderLoadAndCompile(shader, "glsl/raytracer.vs", ShaderType::Vertex);
+	ShaderLoadAndCompile(shader, "glsl/raytracer.fs", ShaderType::Fragment);
 	ShaderLink(shader);
-
 	Bind(shader);
-	ShaderSetVar(shader, "LightAmbient", Vector3(0.25f, 0.1f, 0.1f));
-	ShaderSetVar(shader, "LightSpecularPower", 64);
-	ShaderSetVar(shader, "LightSpecularStrength", 0.5f);
-	ShaderSetVar(shader, "LightPosition", Vector3(1, 1, -1.7f));
-	ShaderSetVar(shader, "LightColor", Vector3(1, 0.72f, 0.08f));
 }
 
 void ParseError(const char* info)
@@ -37,23 +28,24 @@ void ParseError(const char* info)
 
 bool Init()
 {
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
-	glFrontFace(GL_CCW);
-
 	ErrorSetCallback(ParseError);
 
 	mesh = AllocMesh();
-	camera = AllocCamera();
-
 	ReloadShader();
 
-	MeshLoadFromModel(mesh, "assets/sphere.obj");
+	Vertex vertices[] =
+	{
+		Vertex { Vector3(-1, -1, 0) },
+		Vertex { Vector3(-1, 1, 0) },
+		Vertex { Vector3(1, 1, 0) },
 
-	camera->position = Vector3(0, 0, -5);
-	CameraSetToPerspective(camera, 45.0f, 1600.0f / 900.0f, 0.1f, 1000.0f);
-	CameraUpdate(camera);
+		Vertex { Vector3(-1, -1, 0) },
+		Vertex { Vector3(1, 1, 0) },
+		Vertex { Vector3(1, -1, 0) }
+	};
+	
+	MeshUploadData(mesh, vertices, 6, nullptr, 0);
+
 	return true;
 }
 
@@ -69,7 +61,6 @@ void Dispose()
 {
 	Dispose(mesh);
 	Dispose(shader);
-	Dispose(camera);
 }
 
 void KeyPress(int key)
@@ -238,5 +229,3 @@ int CALLBACK WinMain(
 	Dispose();
 	return msg.wParam;
 }
-
-#endif
