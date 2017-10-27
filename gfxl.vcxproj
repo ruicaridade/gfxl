@@ -289,9 +289,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\gfxl\gfxl_common.cpp" />
+    <ClCompile Include="src\gfxl\gfxl_graphics_opengl.cpp" />
     <ClCompile Include="src\glad\glad.c" />
     <ClCompile Include="src\win32_sandbox.cpp" />
-    <ClCompile Include="src\gfxl\gfxl_graphics_opengl.cpp" />
     <ClCompile Include="src\win32_raytracer.cpp" />
   </ItemGroup>
   <ItemGroup>

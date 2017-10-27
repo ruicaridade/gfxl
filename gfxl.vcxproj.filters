@@ -470,10 +470,10 @@
     <ClCompile Include="src\win32_sandbox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\gfxl\gfxl_graphics_opengl.cpp">
+    <ClCompile Include="src\gfxl\gfxl_common.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\gfxl\gfxl_common.cpp">
+    <ClCompile Include="src\gfxl\gfxl_graphics_opengl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -23,11 +23,23 @@ inline void ReloadShader()
 	ShaderLink(shader);
 
 	Bind(shader);
-	ShaderSetVar(shader, "LightAmbient", Vector3(0.25f, 0.1f, 0.1f));
-	ShaderSetVar(shader, "LightSpecularPower", 64.0f);
-	ShaderSetVar(shader, "LightSpecularStrength", 0.5f);
-	ShaderSetVar(shader, "LightPosition", Vector3(1, 1, -1.7f));
-	ShaderSetVar(shader, "LightColor", Vector3(1, 0.72f, 0.08f));
+
+	ShaderSetVar(shader, "LightCount", 2);
+
+	ShaderSetVar(shader, "Ambient.color", Vector3(1.0f, 1.0f, 1.0f));
+	ShaderSetVar(shader, "Ambient.intensity", 0.35f);
+
+	ShaderSetVar(shader, "Material.color", Vector3(0.25f, 0.1f, 0.1f));
+	ShaderSetVar(shader, "Material.shininess", 0.25f);
+	ShaderSetVar(shader, "Material.fuzziness", 8);
+
+	ShaderSetVar(shader, "Lights[0].position", Vector3(1, 1, -1.7f));
+	ShaderSetVar(shader, "Lights[0].color", Vector3(1, 1, 1));
+	ShaderSetVar(shader, "Lights[0].intensity", 20.0f);
+
+	ShaderSetVar(shader, "Lights[1].position", Vector3(-1, -1, -1.7f));
+	ShaderSetVar(shader, "Lights[1].color", Vector3(0, 0.50f, 0.75f));
+	ShaderSetVar(shader, "Lights[1].intensity", 10.0f);
 }
 
 void ParseError(const char* info)

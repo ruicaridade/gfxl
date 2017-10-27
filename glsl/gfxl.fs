@@ -15,23 +15,66 @@ layout (std140) uniform UCamera
 	vec3 position;
 } Camera;
 
-uniform vec3 LightAmbient = vec3(0.1, 0.1, 0.1);
-uniform vec3 LightPosition = vec3(1, 1, -1.5);
-uniform vec3 LightColor = vec3(1, 1, 1);
-uniform float LightSpecularPower = 64;
-uniform float LightSpecularStrength = 0.5;
+struct SAmbient
+{
+	vec3 color;
+	float intensity;
+};
+
+struct SMaterial
+{
+	vec3 color;
+	float shininess;
+	int fuzziness;
+};
+
+struct SLight
+{
+	vec3 position;
+	vec3 color;
+	float intensity;
+};
+
+uniform int LightCount;
+uniform SLight Lights[4];
+uniform SAmbient Ambient;
+uniform SMaterial Material;
+
+vec3 ComputeSpecular(SLight light)
+{
+	vec3 fragToLight = light.position - fsInput.position;
+	float distance2 = fragToLight.length() * fragToLight.length();
+
+	vec3 L = normalize(fragToLight);
+	vec3 V = normalize(Camera.position - fsInput.position);
+	vec3 R = reflect(-L, fsInput.normal);
+	float cosA = pow(max(dot(V, R), 0.0), Material.fuzziness);
+
+	vec3 specular = (light.color * light.intensity) * (Material.color * Material.shininess) * cosA;
+	float attenuation = pow(cosA, 5) / distance2;
+	return specular * attenuation;
+}
+
+vec3 ComputeDiffuse(SLight light)
+{
+	vec3 fragToLight = light.position - fsInput.position;
+	float distance2 = fragToLight.length() * fragToLight.length();
+
+	vec3 L = normalize(fragToLight);
+	float cosA = max(dot(fsInput.normal, L), 0);
+	
+	vec3 diffuse = (light.color * light.intensity) * Material.color * cosA;
+	float attenuation = cosA / distance2;
+	return diffuse * attenuation;
+}
 
 void main()
 {
-	vec3 L = normalize(LightPosition - fsInput.position);
-	float dotTheta = max(dot(fsInput.normal, L), 0);
-	vec3 diffuse = LightColor * dotTheta;
+	vec3 final = Ambient.color * Material.color * Ambient.intensity;
+	for (int i = 0; i < LightCount; i++)
+	{
+		final += ComputeDiffuse(Lights[i]) + ComputeSpecular(Lights[i]);
+	}
 
-	vec3 V = normalize(Camera.position - fsInput.position);
-	vec3 R = reflect(-L, fsInput.normal);
-	dotTheta = pow(max(dot(V, R), 0.0), LightSpecularPower);
-	vec3 specular = LightSpecularStrength * LightColor * dotTheta;
-
-	vec3 final = LightAmbient + diffuse + specular;
 	FColor = vec4(final, 1.0);
 }
