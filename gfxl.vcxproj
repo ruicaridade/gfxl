@@ -288,10 +288,10 @@
     <ClInclude Include="gfxl\glm\vector_relational.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\gfxl_common.cpp" />
+    <ClCompile Include="src\gfxl\gfxl_common.cpp" />
     <ClCompile Include="src\glad\glad.c" />
-    <ClCompile Include="src\win32_editor.cpp" />
-    <ClCompile Include="src\gfxl_graphics_opengl.cpp" />
+    <ClCompile Include="src\win32_sandbox.cpp" />
+    <ClCompile Include="src\gfxl\gfxl_graphics_opengl.cpp" />
     <ClCompile Include="src\win32_raytracer.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -1,4 +1,4 @@
-#if 0
+#if 1
 
 #include <stdio.h>
 
@@ -24,7 +24,7 @@ inline void ReloadShader()
 
 	Bind(shader);
 	ShaderSetVar(shader, "LightAmbient", Vector3(0.25f, 0.1f, 0.1f));
-	ShaderSetVar(shader, "LightSpecularPower", 64);
+	ShaderSetVar(shader, "LightSpecularPower", 64.0f);
 	ShaderSetVar(shader, "LightSpecularStrength", 0.5f);
 	ShaderSetVar(shader, "LightPosition", Vector3(1, 1, -1.7f));
 	ShaderSetVar(shader, "LightColor", Vector3(1, 0.72f, 0.08f));

@@ -17,18 +17,13 @@ layout (std140) uniform UCamera
 	vec3 position;
 } Camera;
 
-//uniform mat4 projection;
-//uniform mat4 view;
-//uniform mat4 model;
+uniform mat4 Model = mat4(1.0);
 
 void main()
 {
-    gl_Position = Camera.projection * Camera.view * vec4(VPosition, 1.0);
+    gl_Position = Camera.projection * Camera.view * Model * vec4(VPosition, 1.0);
 
-	//gl_Position = vec4(VPosition, 1.0);
-    // vsOutput.normal = mat3(transpose(inverse(model))) * VNormal;
-    // vsOutput.position = vec3(model * vec4(VPosition, 1.0));
-	vsOutput.normal = VNormal;
+    vsOutput.normal = mat3(transpose(inverse(Model))) * VNormal;
+    vsOutput.position = (Model * vec4(VPosition, 1.0)).xyz;
     vsOutput.texcoord = VTexCoord;
-	vsOutput.position = VPosition;
 }  

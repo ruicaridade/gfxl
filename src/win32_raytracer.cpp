@@ -1,3 +1,4 @@
+#if 0
 #include <stdio.h>
 
 #include <Windows.h>
@@ -229,3 +230,4 @@ int CALLBACK WinMain(
 	Dispose();
 	return msg.wParam;
 }
+#endif
