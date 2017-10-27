@@ -12,34 +12,39 @@ static HDC hDC;
 using namespace gfxl;
 
 Camera* camera;
-Mesh* mesh;
-Shader* shader;
+Mesh* sphere;
+Mesh* cube;
+Shader* basicShader;
+Shader* skyboxShader;
+Cubemap* cubemap;
 
-inline void ReloadShader()
+inline void ReloadBasicShader()
 {
-	shader = AllocShader();
-	ShaderLoadAndCompile(shader, "glsl/gfxl.vs", ShaderType::Vertex);
-	ShaderLoadAndCompile(shader, "glsl/gfxl.fs", ShaderType::Fragment);
-	ShaderLink(shader);
+	basicShader = AllocShader();
+	ShaderLoadAndCompile(basicShader, "glsl/gfxl.vs", ShaderType::Vertex);
+	ShaderLoadAndCompile(basicShader, "glsl/gfxl.fs", ShaderType::Fragment);
+	ShaderLink(basicShader);
 
-	Bind(shader);
+	Bind(basicShader);
 
-	ShaderSetVar(shader, "LightCount", 2);
+	ShaderSetVar(basicShader, "LightCount", 2);
 
-	ShaderSetVar(shader, "Ambient.color", Vector3(1.0f, 1.0f, 1.0f));
-	ShaderSetVar(shader, "Ambient.intensity", 0.35f);
+	ShaderSetVar(basicShader, "Ambient.color", Vector3(1.0f, 1.0f, 1.0f));
+	ShaderSetVar(basicShader, "Ambient.intensity", 0.35f);
 
-	ShaderSetVar(shader, "Material.color", Vector3(0.25f, 0.1f, 0.1f));
-	ShaderSetVar(shader, "Material.shininess", 0.25f);
-	ShaderSetVar(shader, "Material.fuzziness", 8);
+	ShaderSetVar(basicShader, "Material.color", Vector3(0.25f, 0.1f, 0.1f));
+	ShaderSetVar(basicShader, "Material.shininess", 0.25f);
+	ShaderSetVar(basicShader, "Material.fuzziness", 8);
 
-	ShaderSetVar(shader, "Lights[0].position", Vector3(1, 1, -1.7f));
-	ShaderSetVar(shader, "Lights[0].color", Vector3(1, 1, 1));
-	ShaderSetVar(shader, "Lights[0].intensity", 20.0f);
+	ShaderSetVar(basicShader, "Lights[0].position", Vector3(1, 1, -1.7f));
+	ShaderSetVar(basicShader, "Lights[0].color", Vector3(1, 1, 1));
+	ShaderSetVar(basicShader, "Lights[0].intensity", 20.0f);
 
-	ShaderSetVar(shader, "Lights[1].position", Vector3(-1, -1, -1.7f));
-	ShaderSetVar(shader, "Lights[1].color", Vector3(0, 0.50f, 0.75f));
-	ShaderSetVar(shader, "Lights[1].intensity", 10.0f);
+	ShaderSetVar(basicShader, "Lights[1].position", Vector3(-1, -1, -1.7f));
+	ShaderSetVar(basicShader, "Lights[1].color", Vector3(0, 0.50f, 0.75f));
+	ShaderSetVar(basicShader, "Lights[1].intensity", 10.0f);
+
+	ShaderSetVar(basicShader, "Skybox", 0);
 }
 
 void ParseError(const char* info)
@@ -56,12 +61,33 @@ bool Init()
 
 	ErrorSetCallback(ParseError);
 
-	mesh = AllocMesh();
+	sphere = AllocMesh();
+	cube = AllocMesh();
 	camera = AllocCamera();
 
-	ReloadShader();
+	skyboxShader = AllocShader();
+	ShaderLoadAndCompile(skyboxShader, "glsl/skybox.vs", ShaderType::Vertex);
+	ShaderLoadAndCompile(skyboxShader, "glsl/skybox.fs", ShaderType::Fragment);
+	ShaderLink(skyboxShader);
 
-	MeshLoadFromModel(mesh, "assets/sphere.obj");
+	Bind(skyboxShader);
+	ShaderSetVar(skyboxShader, "Skybox", 0);
+
+	ReloadBasicShader();
+
+	MeshLoadFromModel(sphere, "assets/sphere.obj");
+	MeshLoadFromModel(cube, "assets/cube.obj");
+
+	cubemap = AllocCubemap();
+	CubemapFromImageFiles(cubemap,
+		"assets/cubemaps/carbon/front.tga",
+		"assets/cubemaps/carbon/back.tga",
+		"assets/cubemaps/carbon/left.tga",
+		"assets/cubemaps/carbon/right.tga",
+		"assets/cubemaps/carbon/top.tga",
+		"assets/cubemaps/carbon/bottom.tga");
+
+	Bind(cubemap, 0);
 
 	camera->position = Vector3(0, 0, -5);
 	CameraSetToPerspective(camera, 45.0f, 1600.0f / 900.0f, 0.1f, 1000.0f);
@@ -74,22 +100,34 @@ void Render()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(0.35f, 0.1f, 0.27f, 1);
 
-	Render(mesh);
+	glDisable(GL_CULL_FACE);
+	glDepthMask(GL_FALSE);
+	Bind(cubemap, 0);
+	Bind(skyboxShader);
+	Render(cube);
+	glDepthMask(GL_TRUE);
+	glEnable(GL_CULL_FACE);
+
+	Bind(basicShader);
+	Render(sphere);
 }
 
 void Dispose()
 {
-	Dispose(mesh);
-	Dispose(shader);
+	Dispose(sphere);
+	Dispose(cube);
+	Dispose(basicShader);
+	Dispose(skyboxShader);
 	Dispose(camera);
+	Dispose(cubemap);
 }
 
 void KeyPress(int key)
 {
 	if (key == VK_F1)
 	{
-		Dispose(shader);
-		ReloadShader();
+		Dispose(basicShader);
+		ReloadBasicShader();
 	}
 }
 

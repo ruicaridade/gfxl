@@ -40,6 +40,8 @@ uniform SLight Lights[4];
 uniform SAmbient Ambient;
 uniform SMaterial Material;
 
+uniform samplerCube Skybox;
+
 vec3 ComputeSpecular(SLight light)
 {
 	vec3 fragToLight = light.position - fsInput.position;

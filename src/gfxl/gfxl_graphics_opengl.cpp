@@ -40,6 +40,11 @@ namespace gfxl
 		int height;
 	};
 
+	struct Cubemap
+	{
+		GLuint id;
+	};
+
 	struct CameraImpl
 	{
 		uint32 uniformBuffer;
@@ -66,6 +71,11 @@ namespace gfxl
 	Texture2D * AllocTexture2D()
 	{
 		return new Texture2D();
+	}
+
+	Cubemap * AllocCubemap()
+	{
+		return new Cubemap();
 	}
 
 	bool ShaderLoadAndCompile(Shader* shader, const char* filename, ShaderType type)
@@ -361,6 +371,7 @@ namespace gfxl
 		}
 
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture->width, texture->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		stbi_image_free(data);
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -380,6 +391,46 @@ namespace gfxl
 		*height = texture->height;
 	}
 
+	static void CubemapLoadFace(GLenum face, const char* filename)
+	{
+		int width, height, channels;
+		unsigned char* data = nullptr;
+		data = stbi_load(filename, &width, &height, &channels, 0);
+
+		if (data == nullptr)
+		{
+			Error("Failed to load cubemap face.");
+			return;
+		}
+
+		glTexImage2D(face, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		stbi_image_free(data);
+	}
+
+	void CubemapFromImageFiles(Cubemap* cubemap, const char* front, const char* back, const char* left, 
+		const char* right, const char* top, const char* bottom)
+	{
+		glGenTextures(1, &cubemap->id);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemap->id);
+
+		CubemapLoadFace(GL_TEXTURE_CUBE_MAP_POSITIVE_X, right);
+		CubemapLoadFace(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, left);
+		CubemapLoadFace(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, top);
+		CubemapLoadFace(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, bottom);
+		CubemapLoadFace(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, back);
+		CubemapLoadFace(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, front);
+
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+		glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+	}
+
 	void Bind(const Shader* shader)
 	{
 		if (shader == nullptr)
@@ -395,6 +446,12 @@ namespace gfxl
 	{
 		glActiveTexture(GL_TEXTURE0 + index);
 		glBindTexture(GL_TEXTURE_2D, texture->id);
+	}
+
+	void Bind(const Cubemap* cubemap, int index)
+	{
+		glActiveTexture(GL_TEXTURE0 + index);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemap->id);
 	}
 
 	void Render(const Mesh* mesh, Primitive primitive)
@@ -444,6 +501,12 @@ namespace gfxl
 	{
 		glDeleteTextures(1, &texture->id);
 		delete texture;
+	}
+
+	void Dispose(Cubemap* cubemap)
+	{
+		glDeleteTextures(1, &cubemap->id);
+		delete cubemap;
 	}
 }
 

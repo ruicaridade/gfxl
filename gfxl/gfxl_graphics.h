@@ -26,6 +26,7 @@ namespace gfxl
 	struct Shader;
 	struct Mesh;
 	struct Texture2D;
+	struct Cubemap;
 	
 	struct CameraImpl;
 	struct Camera
@@ -51,6 +52,7 @@ namespace gfxl
 	Mesh* AllocMesh();
 	Shader* AllocShader();
 	Texture2D* AllocTexture2D();
+	Cubemap* AllocCubemap();
 
 	bool ShaderLoadAndCompile(Shader* shader, const char* filename, ShaderType type);
 	bool ShaderLink(Shader* shader);
@@ -72,8 +74,17 @@ namespace gfxl
 	void Texture2DFromImageFile(Texture2D* texture, const char* filename);
 	void Texture2DGetSize(const Texture2D* texture, int* width, int* height);
 
+	void CubemapFromImageFiles(Cubemap* cubemap, 
+		const char* front,
+		const char* back,
+		const char* left,
+		const char* right,
+		const char* top,
+		const char* bottom);
+
 	void Bind(const Shader* shader);
 	void Bind(const Texture2D* texture, int index);
+	void Bind(const Cubemap* cubemap, int index);
 	
 	void Render(const Mesh* mesh, Primitive primitive = Primitive::Triangles);
 
@@ -81,6 +92,7 @@ namespace gfxl
 	void Dispose(Mesh* mesh);
 	void Dispose(Camera* camera);
 	void Dispose(Texture2D* texture);
+	void Dispose(Cubemap* cubemap);
 }
 
 #endif
