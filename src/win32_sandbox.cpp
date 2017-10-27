@@ -32,8 +32,8 @@ static inline void ReloadBasicShader()
 	ShaderSetVar(basicShader, "Ambient.color", Vector3(1.0f, 1.0f, 1.0f));
 	ShaderSetVar(basicShader, "Ambient.intensity", 0.35f);
 
-	ShaderSetVar(basicShader, "Material.color", Vector3(0.25f, 0.1f, 0.1f));
-	ShaderSetVar(basicShader, "Material.shininess", 0.25f);
+	ShaderSetVar(basicShader, "Material.color", Vector3(0.60f, 0.4f, 0.4f));
+	ShaderSetVar(basicShader, "Material.shininess", 0.50f);
 	ShaderSetVar(basicShader, "Material.fuzziness", 8);
 
 	ShaderSetVar(basicShader, "Lights[0].position", Vector3(1, 1, -1.7f));
@@ -80,12 +80,12 @@ static inline bool Init()
 
 	cubemap = AllocCubemap();
 	CubemapFromImageFiles(cubemap,
-		"assets/cubemaps/carbon/front.tga",
-		"assets/cubemaps/carbon/back.tga",
-		"assets/cubemaps/carbon/left.tga",
-		"assets/cubemaps/carbon/right.tga",
-		"assets/cubemaps/carbon/top.tga",
-		"assets/cubemaps/carbon/bottom.tga");
+		"assets/cubemaps/nissi/front.jpg",
+		"assets/cubemaps/nissi/back.jpg",
+		"assets/cubemaps/nissi/left.jpg",
+		"assets/cubemaps/nissi/right.jpg",
+		"assets/cubemaps/nissi/top.jpg",
+		"assets/cubemaps/nissi/bottom.jpg");
 
 	Bind(cubemap, 0);
 
