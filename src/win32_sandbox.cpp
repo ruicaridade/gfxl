@@ -42,7 +42,7 @@ static inline void ReloadBasicShader()
 
 	ShaderSetVar(basicShader, "Lights[1].position", Vector3(-1, -1, -1.7f));
 	ShaderSetVar(basicShader, "Lights[1].color", Vector3(0, 0.50f, 0.75f));
-	ShaderSetVar(basicShader, "Lights[1].intensity", 10.0f);
+	ShaderSetVar(basicShader, "Lights[1].intensity", 5.0f);
 
 	ShaderSetVar(basicShader, "Skybox", 0);
 }
