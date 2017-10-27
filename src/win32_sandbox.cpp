@@ -7,18 +7,18 @@
 
 #include <gfxl.h>
 
-static HDC hDC;
-
 using namespace gfxl;
 
-Camera* camera;
-Mesh* sphere;
-Mesh* cube;
-Shader* basicShader;
-Shader* skyboxShader;
-Cubemap* cubemap;
+static HDC hDC;
 
-inline void ReloadBasicShader()
+static Camera* camera;
+static Mesh* sphere;
+static Mesh* cube;
+static Shader* basicShader;
+static Shader* skyboxShader;
+static Cubemap* cubemap;
+
+static inline void ReloadBasicShader()
 {
 	basicShader = AllocShader();
 	ShaderLoadAndCompile(basicShader, "glsl/gfxl.vs", ShaderType::Vertex);
@@ -52,7 +52,7 @@ void ParseError(const char* info)
 	OutputDebugStringA(info);
 }
 
-bool Init()
+static inline bool Init()
 {
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
@@ -95,7 +95,7 @@ bool Init()
 	return true;
 }
 
-void Render()
+static inline void Render()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(0.35f, 0.1f, 0.27f, 1);
@@ -112,7 +112,7 @@ void Render()
 	Render(sphere);
 }
 
-void Dispose()
+static inline void Dispose()
 {
 	Dispose(sphere);
 	Dispose(cube);
@@ -122,7 +122,7 @@ void Dispose()
 	Dispose(cubemap);
 }
 
-void KeyPress(int key)
+static inline void KeyPress(int key)
 {
 	if (key == VK_F1)
 	{
@@ -131,7 +131,7 @@ void KeyPress(int key)
 	}
 }
 
-void Resize(int width, int height, float aspectRatio)
+static inline void Resize(int width, int height, float aspectRatio)
 {
 	glViewport(0, 0, width, height);
 }

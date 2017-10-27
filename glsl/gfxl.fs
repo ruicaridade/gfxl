@@ -42,6 +42,13 @@ uniform SMaterial Material;
 
 uniform samplerCube Skybox;
 
+vec3 ComputeSkyboxReflection()
+{
+	vec3 I = normalize(fsInput.position - Camera.position);
+	vec3 R = reflect(I, fsInput.normal);
+	return vec3(texture(Skybox, R).rgb);
+}
+
 vec3 ComputeSpecular(SLight light)
 {
 	vec3 fragToLight = light.position - fsInput.position;
@@ -72,7 +79,7 @@ vec3 ComputeDiffuse(SLight light)
 
 void main()
 {
-	vec3 final = Ambient.color * Material.color * Ambient.intensity;
+	vec3 final = (Ambient.color * Ambient.intensity) * (ComputeSkyboxReflection() * Material.shininess) * Material.color;
 	for (int i = 0; i < LightCount; i++)
 	{
 		final += ComputeDiffuse(Lights[i]) + ComputeSpecular(Lights[i]);
