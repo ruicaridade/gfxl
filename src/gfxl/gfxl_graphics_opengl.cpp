@@ -358,6 +358,7 @@ namespace gfxl
 	void Texture2DFromImageFile(Texture2D* texture, const char * filename)
 	{
 		glGenTextures(1, &texture->id);
+		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture->id);
 
 		int channels;
@@ -411,6 +412,7 @@ namespace gfxl
 		const char* right, const char* top, const char* bottom)
 	{
 		glGenTextures(1, &cubemap->id);
+		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemap->id);
 
 		CubemapLoadFace(GL_TEXTURE_CUBE_MAP_POSITIVE_X, right);

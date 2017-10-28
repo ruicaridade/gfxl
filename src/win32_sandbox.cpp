@@ -12,11 +12,18 @@ using namespace gfxl;
 static HDC hDC;
 
 static Camera* camera;
+
 static Mesh* sphere;
 static Mesh* cube;
+
 static Shader* basicShader;
 static Shader* skyboxShader;
+
 static Cubemap* cubemap;
+
+static Texture2D* albedo;
+static Texture2D* metallic;
+static Texture2D* roughness;
 
 static inline void ReloadBasicShader()
 {
@@ -27,20 +34,22 @@ static inline void ReloadBasicShader()
 
 	Bind(basicShader);
 
-	ShaderSetVar(basicShader, "LightCount", 2);
+	ShaderSetVar(basicShader, "LightCount", 1);
 
 	ShaderSetVar(basicShader, "Ambient.color", Vector3(1.0f, 1.0f, 1.0f));
 	ShaderSetVar(basicShader, "Ambient.intensity", 0.35f);
 
-	ShaderSetVar(basicShader, "Material.color", Vector3(0.60f, 0.4f, 0.4f));
-	ShaderSetVar(basicShader, "Material.shininess", 0.50f);
-	ShaderSetVar(basicShader, "Material.fuzziness", 8);
+	ShaderSetVar(basicShader, "Material.albedo", 1);
+	ShaderSetVar(basicShader, "Material.normal", 2);
+	ShaderSetVar(basicShader, "Material.metallic", 3);
+	ShaderSetVar(basicShader, "Material.roughness", 4);
+	ShaderSetVar(basicShader, "Material.emission", 5);
 
 	ShaderSetVar(basicShader, "Lights[0].position", Vector3(1, 1, -1.7f));
 	ShaderSetVar(basicShader, "Lights[0].color", Vector3(1, 1, 1));
-	ShaderSetVar(basicShader, "Lights[0].intensity", 20.0f);
+	ShaderSetVar(basicShader, "Lights[0].intensity", 10.0f);
 
-	ShaderSetVar(basicShader, "Lights[1].position", Vector3(-1, -1, -1.7f));
+	ShaderSetVar(basicShader, "Lights[1].position", Vector3(0, -1.5f, 0));
 	ShaderSetVar(basicShader, "Lights[1].color", Vector3(0, 0.50f, 0.75f));
 	ShaderSetVar(basicShader, "Lights[1].intensity", 5.0f);
 
@@ -54,16 +63,28 @@ void ParseError(const char* info)
 
 static inline bool Init()
 {
+	glEnable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
+
 	glCullFace(GL_BACK);
 	glFrontFace(GL_CCW);
+
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	ErrorSetCallback(ParseError);
 
 	sphere = AllocMesh();
 	cube = AllocMesh();
 	camera = AllocCamera();
+	cubemap = AllocCubemap();
+	albedo = AllocTexture2D();
+	metallic = AllocTexture2D();
+	roughness = AllocTexture2D();
+
+	Texture2DFromImageFile(albedo, "assets/materials/rusted-iron/albedo.png");
+	Texture2DFromImageFile(metallic, "assets/materials/rusted-iron/metallic.png");
+	Texture2DFromImageFile(roughness, "assets/materials/rusted-iron/roughness.png");
 
 	skyboxShader = AllocShader();
 	ShaderLoadAndCompile(skyboxShader, "glsl/skybox.vs", ShaderType::Vertex);
@@ -78,7 +99,6 @@ static inline bool Init()
 	MeshLoadFromModel(sphere, "assets/sphere.obj");
 	MeshLoadFromModel(cube, "assets/cube.obj");
 
-	cubemap = AllocCubemap();
 	CubemapFromImageFiles(cubemap,
 		"assets/cubemaps/nissi/front.jpg",
 		"assets/cubemaps/nissi/back.jpg",
@@ -86,8 +106,6 @@ static inline bool Init()
 		"assets/cubemaps/nissi/right.jpg",
 		"assets/cubemaps/nissi/top.jpg",
 		"assets/cubemaps/nissi/bottom.jpg");
-
-	Bind(cubemap, 0);
 
 	camera->position = Vector3(0, 0, -5);
 	CameraSetToPerspective(camera, 45.0f, 1600.0f / 900.0f, 0.1f, 1000.0f);
@@ -100,9 +118,13 @@ static inline void Render()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(0.35f, 0.1f, 0.27f, 1);
 
+	Bind(cubemap, 0);
+	Bind(albedo, 1);
+	Bind(metallic, 3);
+	Bind(roughness, 4);
+
 	glDisable(GL_CULL_FACE);
 	glDepthMask(GL_FALSE);
-	Bind(cubemap, 0);
 	Bind(skyboxShader);
 	Render(cube);
 	glDepthMask(GL_TRUE);
@@ -120,6 +142,9 @@ static inline void Dispose()
 	Dispose(skyboxShader);
 	Dispose(camera);
 	Dispose(cubemap);
+	Dispose(albedo);
+	Dispose(metallic);
+	Dispose(roughness);
 }
 
 static inline void KeyPress(int key)
