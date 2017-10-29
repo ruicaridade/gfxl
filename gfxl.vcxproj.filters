@@ -465,6 +465,9 @@
     <ClInclude Include="gfxl\glm\vector_relational.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="gfxl\gfxl_window.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\gfxl\gfxl_common.cpp">
@@ -480,6 +483,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\sandbox\win32_raytracer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gfxl\gfxl_window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

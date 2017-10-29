@@ -7,6 +7,14 @@
 
 namespace gfxl
 {
+	struct CameraImpl;
+	struct Camera
+	{
+		Vector3 position;
+		Vector3 lookAt;
+		CameraImpl* impl;
+	};
+
 	struct Vertex
 	{
 		Vector3 position;
@@ -18,14 +26,8 @@ namespace gfxl
 	struct Mesh;
 	struct Texture2D;
 	struct Cubemap;
-
-	struct CameraImpl;
-	struct Camera
-	{
-		Vector3 position;
-		Vector3 lookAt;
-		CameraImpl* impl;
-	};
+	struct SpriteAtlas;
+	struct SpriteBatch;
 
 	enum class ShaderType : int
 	{
@@ -59,6 +61,9 @@ namespace gfxl
 	Texture2D* CreateTexture2D();
 	Cubemap* CreateCubemap();
 
+	SpriteAtlas* CreateSpriteAtlas();
+	SpriteBatch* CreateSpriteBatch();
+
 	bool ShaderLoadAndCompile(Shader* shader, const char* filename, ShaderType type);
 	bool ShaderLink(Shader* shader);
 	void ShaderSetVar(const Shader* shader, const char* name, const Vector2& value);
@@ -87,12 +92,18 @@ namespace gfxl
 		const char* top,
 		const char* bottom);
 
+	void SpriteAtlasLoadFromImageFile(SpriteAtlas* atlas, const char* filename, int tileWidth, int tileHeight);
+
+	void SpriteBatchBegin();
+	void SpriteBatchRender(SpriteAtlas* atlas, int x, int y);
+	void SpriteBatchEnd();
+
 	void Bind(const Shader* shader);
 	void Bind(const Texture2D* texture, int index);
 	void Bind(const Cubemap* cubemap, int index);
 
 	void Render(const Mesh* mesh, Primitive primitive = Primitive::Triangles);
-
+	
 	void Dispose(Shader* shader);
 	void Dispose(Mesh* mesh);
 	void Dispose(Camera* camera);

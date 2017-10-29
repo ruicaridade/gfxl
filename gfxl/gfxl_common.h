@@ -17,6 +17,12 @@ namespace gfxl
 {
 	void ErrorSetCallback(void(*callback)(const char*));
 	void Error(const char* info);
+
+	struct Point
+	{
+		int x;
+		int y;
+	};
 }
 
 #endif

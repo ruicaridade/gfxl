@@ -21,6 +21,12 @@
 
 namespace gfxl
 {
+	struct CameraImpl
+	{
+		uint32 uniformBuffer;
+		Matrix4 projection;
+	};
+
 	struct Shader
 	{
 		GLuint id;
@@ -50,10 +56,15 @@ namespace gfxl
 		GLuint id;
 	};
 
-	struct CameraImpl
+	struct SpriteBatch
 	{
-		uint32 uniformBuffer;
-		Matrix4 projection;
+		// TODO: Maybe keep a list things we should be rendering.
+	};
+
+	struct SpriteAtlas
+	{
+		Texture2D texture;
+		Vector2i size;
 	};
 
 	Camera* CreateCamera()
@@ -85,6 +96,16 @@ namespace gfxl
 	Cubemap* CreateCubemap()
 	{
 		return (Cubemap*)malloc(sizeof(Cubemap));
+	}
+
+	SpriteBatch* CreateSpriteBatch()
+	{
+		return (SpriteBatch*)malloc(sizeof(SpriteBatch));
+	}
+
+	SpriteAtlas* CreateSpriteAtlas()
+	{
+		return (SpriteAtlas*)malloc(sizeof(SpriteAtlas));
 	}
 
 	bool ShaderLoadAndCompile(Shader* shader, const char* filename, ShaderType type)
