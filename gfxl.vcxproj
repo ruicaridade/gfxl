@@ -286,6 +286,7 @@
     <ClInclude Include="gfxl\glm\vec3.hpp" />
     <ClInclude Include="gfxl\glm\vec4.hpp" />
     <ClInclude Include="gfxl\glm\vector_relational.hpp" />
+    <ClInclude Include="src\wglext.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\gfxl\gfxl_common.cpp" />
@@ -415,6 +416,8 @@
     <None Include="glsl\gfxl.vs" />
     <None Include="glsl\raytracer.fs" />
     <None Include="glsl\raytracer.vs" />
+    <None Include="glsl\skybox.fs" />
+    <None Include="glsl\skybox.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

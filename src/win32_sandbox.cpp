@@ -4,6 +4,7 @@
 
 #include <Windows.h>
 #include <glad\glad.h>
+#include "wglext.h"
 
 #include <gfxl.h>
 
@@ -24,10 +25,11 @@ static Cubemap* cubemap;
 static Texture2D* albedo;
 static Texture2D* metallic;
 static Texture2D* roughness;
+static Texture2D* normal;
 
 static inline void ReloadBasicShader()
 {
-	basicShader = AllocShader();
+	basicShader = CreateShader();
 	ShaderLoadAndCompile(basicShader, "glsl/gfxl.vs", ShaderType::Vertex);
 	ShaderLoadAndCompile(basicShader, "glsl/gfxl.fs", ShaderType::Fragment);
 	ShaderLink(basicShader);
@@ -74,19 +76,21 @@ static inline bool Init()
 
 	ErrorSetCallback(ParseError);
 
-	sphere = AllocMesh();
-	cube = AllocMesh();
-	camera = AllocCamera();
-	cubemap = AllocCubemap();
-	albedo = AllocTexture2D();
-	metallic = AllocTexture2D();
-	roughness = AllocTexture2D();
+	sphere = CreateMesh();
+	cube = CreateMesh();
+	camera = CreateCamera();
+	cubemap = CreateCubemap();
+	albedo = CreateTexture2D();
+	normal = CreateTexture2D();
+	metallic = CreateTexture2D();
+	roughness = CreateTexture2D();
 
 	Texture2DFromImageFile(albedo, "assets/materials/rusted-iron/albedo.png");
 	Texture2DFromImageFile(metallic, "assets/materials/rusted-iron/metallic.png");
 	Texture2DFromImageFile(roughness, "assets/materials/rusted-iron/roughness.png");
+	Texture2DFromImageFile(normal, "assets/materials/rusted-iron/normal.png");
 
-	skyboxShader = AllocShader();
+	skyboxShader = CreateShader();
 	ShaderLoadAndCompile(skyboxShader, "glsl/skybox.vs", ShaderType::Vertex);
 	ShaderLoadAndCompile(skyboxShader, "glsl/skybox.fs", ShaderType::Fragment);
 	ShaderLink(skyboxShader);
@@ -120,6 +124,7 @@ static inline void Render()
 
 	Bind(cubemap, 0);
 	Bind(albedo, 1);
+	Bind(normal, 2);
 	Bind(metallic, 3);
 	Bind(roughness, 4);
 
@@ -145,6 +150,7 @@ static inline void Dispose()
 	Dispose(albedo);
 	Dispose(metallic);
 	Dispose(roughness);
+	Dispose(normal);
 }
 
 static inline void KeyPress(int key)
@@ -214,11 +220,28 @@ LRESULT CALLBACK WndProc(
 		SetPixelFormat(hDC, pixelFormatId, &pfd);
 		hRC = wglCreateContext(hDC);
 		wglMakeCurrent(hDC, hRC);
-		
+
 		if (!gladLoadGL())
 		{
 			SendMessage(hWnd, WM_CLOSE, 0, 0);
 			break;
+		}
+		
+		int attribs[] =
+		{
+			WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
+			WGL_CONTEXT_MINOR_VERSION_ARB, 3,
+			WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
+			0
+		};
+
+		PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB =
+			(PFNWGLCREATECONTEXTATTRIBSARBPROC)wglGetProcAddress("wglCreateContextAttribsARB");
+		HGLRC attribHRC = wglCreateContextAttribsARB(hDC, 0, attribs);
+		
+		if (attribHRC && wglMakeCurrent(hDC, attribHRC))
+		{
+			hRC = attribHRC;
 		}
 	} break;
 

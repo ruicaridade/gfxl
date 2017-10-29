@@ -22,12 +22,12 @@ namespace gfxl
 		Vector3 normal;
 		Vector2 texcoord;
 	};
-	
+
 	struct Shader;
 	struct Mesh;
 	struct Texture2D;
 	struct Cubemap;
-	
+
 	struct CameraImpl;
 	struct Camera
 	{
@@ -38,21 +38,35 @@ namespace gfxl
 
 	enum class ShaderType : int
 	{
-		Vertex,
-		Fragment,
-		Geometry
+#if GFXL_OPENGL
+
+		Vertex = 0x8B31,
+		Fragment = 0x8B30,
+		Geometry = 0x8DD9
+
+#endif
 	};
 
 	enum class Primitive : int
 	{
-		Triangles
+#if GFXL_OPENGL
+
+		Points = 0x0000,
+		Lines = 0x0001,
+		LineLoop = 0x0002,
+		LineStrip = 0x0003,
+		Triangles = 0x0004,
+		TriangleStrip = 0x0005,
+		TriangleFan = 0x0006
+
+#endif
 	};
 
-	Camera* AllocCamera();
-	Mesh* AllocMesh();
-	Shader* AllocShader();
-	Texture2D* AllocTexture2D();
-	Cubemap* AllocCubemap();
+	Camera* CreateCamera();
+	Mesh* CreateMesh();
+	Shader* CreateShader();
+	Texture2D* CreateTexture2D();
+	Cubemap* CreateCubemap();
 
 	bool ShaderLoadAndCompile(Shader* shader, const char* filename, ShaderType type);
 	bool ShaderLink(Shader* shader);
@@ -62,7 +76,7 @@ namespace gfxl
 	void ShaderSetVar(const Shader* shader, const char* name, const Matrix4& value);
 	void ShaderSetVar(const Shader* shader, const char* name, float value);
 	void ShaderSetVar(const Shader* shader, const char* name, int value);
-	
+
 	void MeshLoadFromModel(Mesh* mesh, const char* filename);
 	void MeshUploadData(Mesh* mesh,
 		const Vertex* vertices, uint32 vertexCount,
@@ -74,7 +88,7 @@ namespace gfxl
 	void Texture2DFromImageFile(Texture2D* texture, const char* filename);
 	void Texture2DGetSize(const Texture2D* texture, int* width, int* height);
 
-	void CubemapFromImageFiles(Cubemap* cubemap, 
+	void CubemapFromImageFiles(Cubemap* cubemap,
 		const char* front,
 		const char* back,
 		const char* left,
@@ -85,7 +99,7 @@ namespace gfxl
 	void Bind(const Shader* shader);
 	void Bind(const Texture2D* texture, int index);
 	void Bind(const Cubemap* cubemap, int index);
-	
+
 	void Render(const Mesh* mesh, Primitive primitive = Primitive::Triangles);
 
 	void Dispose(Shader* shader);

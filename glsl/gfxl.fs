@@ -85,6 +85,16 @@ vec3 ComputeDiffuse(SLight light)
 	return diffuse * attenuation;
 }
 
+vec3 NormalToRgb(vec3 normal)
+{
+	return normal * 0.5 + 0.5;
+}
+
+vec3 RgbToNormal(vec3 rgb)
+{
+	return normalize(rgb * 2.0 - 1.0);
+}
+
 void main()
 {
 	vec3 albedo = vec3(texture(Material.albedo, fsInput.texcoord));

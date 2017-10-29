@@ -15,12 +15,17 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
+#define GFXL_SHADER_VERTEX		GL_VERTEX_SHADER
+#define GFXL_SHADER_FRAGMENT	GL_FRAGMENT_SHADER
+#define GFXL_SHADER_GEOMETRY	GL_GEOMETRY_SHADER
+
 namespace gfxl
 {
 	struct Shader
 	{
 		GLuint id;
-		std::vector<GLuint> sources;
+		GLuint sources[6];
+		GLuint count;
 	};
 
 	struct Mesh
@@ -51,44 +56,40 @@ namespace gfxl
 		Matrix4 projection;
 	};
 
-	Camera* AllocCamera()
+	Camera* CreateCamera()
 	{
-		Camera* camera = new Camera();
-		camera->impl = new CameraImpl();
+		Camera* camera = (Camera*)malloc(sizeof(Camera));
+		*camera = {};
+		camera->impl = (CameraImpl*)malloc(sizeof(CameraImpl));
+		*camera->impl = {};
 		return camera;
 	}
 
-	Mesh* AllocMesh()
+	Mesh* CreateMesh()
 	{
-		return new Mesh();
+		return (Mesh*)malloc(sizeof(Mesh));
 	}
 
-	Shader* AllocShader()
+	Shader* CreateShader()
 	{
-		return new Shader();
+		Shader* ptr = (Shader*)malloc(sizeof(Shader));
+		ptr->count = 0;
+		return ptr;
 	}
 
-	Texture2D * AllocTexture2D()
+	Texture2D* CreateTexture2D()
 	{
-		return new Texture2D();
+		return (Texture2D*)malloc(sizeof(Texture2D));
 	}
 
-	Cubemap * AllocCubemap()
+	Cubemap* CreateCubemap()
 	{
-		return new Cubemap();
+		return (Cubemap*)malloc(sizeof(Cubemap));
 	}
 
 	bool ShaderLoadAndCompile(Shader* shader, const char* filename, ShaderType type)
 	{
-		GLenum glType = 0;
-		if (type == ShaderType::Vertex)
-			glType = GL_VERTEX_SHADER;
-		else if (type == ShaderType::Fragment)
-			glType = GL_FRAGMENT_SHADER;
-		else if (type == ShaderType::Geometry)
-			glType = GL_GEOMETRY_SHADER;
-
-		GLuint id = glCreateShader(glType);
+		GLuint id = glCreateShader((GLenum)type);
 
 		std::ifstream file(filename);
 		std::string contents((std::istreambuf_iterator<char>(file)),
@@ -110,7 +111,7 @@ namespace gfxl
 			return false;
 		}
 
-		shader->sources.push_back(id);
+		shader->sources[shader->count++] = id;
 		return true;
 	}
 
@@ -118,8 +119,8 @@ namespace gfxl
 	{
 		shader->id = glCreateProgram();
 
-		for (auto src : shader->sources)
-			glAttachShader(shader->id, src);
+		for (int i = 0; i < shader->count; i++)
+			glAttachShader(shader->id, shader->sources[i]);
 
 		glLinkProgram(shader->id);
 
@@ -133,16 +134,15 @@ namespace gfxl
 			Error(info);
 			glDeleteProgram(shader->id);
 
-			for (auto src : shader->sources)
-				glDeleteShader(src);
+			for (int i = 0; i < shader->count; i++)
+				glDeleteShader(shader->sources[i]);
 
 			return false;
 		}
 
-		for (auto src : shader->sources)
-			glDeleteShader(src);
+		for (int i = 0; i < shader->count; i++)
+			glDeleteShader(shader->sources[i]);
 
-		shader->sources.clear();
 		return true;
 	}
 
@@ -373,7 +373,7 @@ namespace gfxl
 
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture->width, texture->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 		stbi_image_free(data);
-
+		
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
@@ -458,25 +458,21 @@ namespace gfxl
 
 	void Render(const Mesh* mesh, Primitive primitive)
 	{
-		GLenum glPrimitive = 0;
-		if (primitive == Primitive::Triangles)
-			glPrimitive = GL_TRIANGLES;
-
 		glBindVertexArray(mesh->vertexArray);
 
 		if (mesh->indexBuffer == 0 || mesh->indexCount == 0)
 		{
-			glDrawArrays(glPrimitive, 0, mesh->vertexCount);
+			glDrawArrays((GLenum)primitive, 0, mesh->vertexCount);
 			return;
 		}
 
-		glDrawElements(glPrimitive, mesh->indexCount, GL_UNSIGNED_INT, 0);
+		glDrawElements((GLenum)primitive, mesh->indexCount, GL_UNSIGNED_INT, 0);
 	}
 
 	void Dispose(Shader* shader)
 	{
 		glDeleteProgram(shader->id);
-		delete shader;
+		free(shader);
 	}
 
 	void Dispose(Mesh* mesh)
@@ -490,25 +486,25 @@ namespace gfxl
 		if (mesh->indexBuffer)
 			glDeleteBuffers(1, &mesh->indexBuffer);
 
-		delete mesh;
+		free(mesh);
 	}
 
 	void Dispose(Camera* camera)
 	{
-		delete camera->impl;
-		delete camera;
+		free(camera->impl);
+		free(camera);
 	}
 
 	void Dispose(Texture2D* texture)
 	{
 		glDeleteTextures(1, &texture->id);
-		delete texture;
+		free(texture);
 	}
 
 	void Dispose(Cubemap* cubemap)
 	{
 		glDeleteTextures(1, &cubemap->id);
-		delete cubemap;
+		free(cubemap);
 	}
 }
 

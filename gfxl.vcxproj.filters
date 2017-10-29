@@ -459,6 +459,9 @@
     <ClInclude Include="gfxl\gfxl_common.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\wglext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\glad\glad.c">
@@ -830,5 +833,7 @@
     <None Include="glsl\gfxl.fs" />
     <None Include="glsl\raytracer.vs" />
     <None Include="glsl\raytracer.fs" />
+    <None Include="glsl\skybox.vs" />
+    <None Include="glsl\skybox.fs" />
   </ItemGroup>
 </Project>
