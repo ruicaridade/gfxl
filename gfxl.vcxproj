@@ -95,7 +95,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <PreprocessorDefinitions>GFXL_OPENGL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GFXL_OPENGL;GFXL_GLM;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -104,7 +104,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <PreprocessorDefinitions>GFXL_OPENGL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GFXL_OPENGL;GFXL_GLM;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -115,7 +115,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <PreprocessorDefinitions>GFXL_OPENGL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GFXL_OPENGL;GFXL_GLM;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -130,7 +130,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <PreprocessorDefinitions>GFXL_OPENGL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GFXL_OPENGL;GFXL_GLM;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -142,6 +142,7 @@
     <ClInclude Include="gfxl\gfxl_common.h" />
     <ClInclude Include="gfxl\gfxl_core.h" />
     <ClInclude Include="gfxl\gfxl_graphics.h" />
+    <ClInclude Include="gfxl\gfxl_math.h" />
     <ClInclude Include="gfxl\glm\common.hpp" />
     <ClInclude Include="gfxl\glm\detail\compute_vector_relational.hpp" />
     <ClInclude Include="gfxl\glm\detail\qualifier.hpp" />
@@ -286,14 +287,14 @@
     <ClInclude Include="gfxl\glm\vec3.hpp" />
     <ClInclude Include="gfxl\glm\vec4.hpp" />
     <ClInclude Include="gfxl\glm\vector_relational.hpp" />
-    <ClInclude Include="src\wglext.h" />
+    <ClInclude Include="src\sandbox\wglext.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\gfxl\gfxl_common.cpp" />
     <ClCompile Include="src\gfxl\gfxl_graphics_opengl.cpp" />
-    <ClCompile Include="src\glad\glad.c" />
-    <ClCompile Include="src\win32_sandbox.cpp" />
-    <ClCompile Include="src\win32_raytracer.cpp" />
+    <ClCompile Include="src\gfxl\glad\glad.c" />
+    <ClCompile Include="src\sandbox\win32_sandbox.cpp" />
+    <ClCompile Include="src\sandbox\win32_raytracer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="gfxl\glm\detail\func_common.inl" />
@@ -412,12 +413,6 @@
     <None Include="gfxl\glm\gtx\vector_angle.inl" />
     <None Include="gfxl\glm\gtx\vector_query.inl" />
     <None Include="gfxl\glm\gtx\wrap.inl" />
-    <None Include="glsl\gfxl.fs" />
-    <None Include="glsl\gfxl.vs" />
-    <None Include="glsl\raytracer.fs" />
-    <None Include="glsl\raytracer.vs" />
-    <None Include="glsl\skybox.fs" />
-    <None Include="glsl\skybox.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

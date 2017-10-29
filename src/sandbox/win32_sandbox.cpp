@@ -30,8 +30,8 @@ static Texture2D* normal;
 static inline void ReloadBasicShader()
 {
 	basicShader = CreateShader();
-	ShaderLoadAndCompile(basicShader, "glsl/gfxl.vs", ShaderType::Vertex);
-	ShaderLoadAndCompile(basicShader, "glsl/gfxl.fs", ShaderType::Fragment);
+	ShaderLoadAndCompile(basicShader, "assets/glsl/gfxl.vs", ShaderType::Vertex);
+	ShaderLoadAndCompile(basicShader, "assets/glsl/gfxl.fs", ShaderType::Fragment);
 	ShaderLink(basicShader);
 
 	Bind(basicShader);
@@ -91,8 +91,8 @@ static inline bool Init()
 	Texture2DFromImageFile(normal, "assets/materials/rusted-iron/normal.png");
 
 	skyboxShader = CreateShader();
-	ShaderLoadAndCompile(skyboxShader, "glsl/skybox.vs", ShaderType::Vertex);
-	ShaderLoadAndCompile(skyboxShader, "glsl/skybox.fs", ShaderType::Fragment);
+	ShaderLoadAndCompile(skyboxShader, "assets/glsl/skybox.vs", ShaderType::Vertex);
+	ShaderLoadAndCompile(skyboxShader, "assets/glsl/skybox.fs", ShaderType::Fragment);
 	ShaderLink(skyboxShader);
 
 	Bind(skyboxShader);

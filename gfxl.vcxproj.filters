@@ -459,24 +459,27 @@
     <ClInclude Include="gfxl\gfxl_common.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\wglext.h">
+    <ClInclude Include="src\sandbox\wglext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gfxl\gfxl_math.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\glad\glad.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\win32_raytracer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\win32_sandbox.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\gfxl\gfxl_common.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\gfxl\gfxl_graphics_opengl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gfxl\glad\glad.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sandbox\win32_sandbox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sandbox\win32_raytracer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -829,11 +832,5 @@
     <None Include="gfxl\glm\gtx\wrap.inl">
       <Filter>Header Files</Filter>
     </None>
-    <None Include="glsl\gfxl.vs" />
-    <None Include="glsl\gfxl.fs" />
-    <None Include="glsl\raytracer.vs" />
-    <None Include="glsl\raytracer.fs" />
-    <None Include="glsl\skybox.vs" />
-    <None Include="glsl\skybox.fs" />
   </ItemGroup>
 </Project>
