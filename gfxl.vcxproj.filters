@@ -24,6 +24,15 @@
     <ClInclude Include="gfxl\gfxl_graphics.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="gfxl\gfxl_common.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sandbox\wglext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gfxl\gfxl_math.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="gfxl\glm\detail\_features.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -454,15 +463,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="gfxl\glm\vector_relational.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="gfxl\gfxl_common.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\sandbox\wglext.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="gfxl\gfxl_math.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
