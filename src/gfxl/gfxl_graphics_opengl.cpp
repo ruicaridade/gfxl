@@ -13,7 +13,7 @@
 #include <glm\gtc\matrix_transform.hpp>
 
 #define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
+#include <stb\stb_image.h>
 
 #define GFXL_SHADER_VERTEX		GL_VERTEX_SHADER
 #define GFXL_SHADER_FRAGMENT	GL_FRAGMENT_SHADER

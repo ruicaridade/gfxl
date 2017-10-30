@@ -4,11 +4,11 @@
 
 #ifdef GFXL_GLM
 
-#include "glm\glm.hpp"
-#include "glm\vec2.hpp"
-#include "glm\vec3.hpp"
-#include "glm\vec4.hpp"
-#include "glm\matrix.hpp"
+#include <glm\glm.hpp>
+#include <glm\vec2.hpp>
+#include <glm\vec3.hpp>
+#include <glm\vec4.hpp>
+#include <glm\matrix.hpp>
 
 #define PI					3.14159265358979323846f
 #define Dot(v1, v2)			glm::dot(v1, v2)
