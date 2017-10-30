@@ -1,4 +1,6 @@
-#if 1
+#include "config.h"
+
+#ifdef WIN32_SANDBOX
 
 #include <stdio.h>
 #include <glad\glad.h>

@@ -1,4 +1,7 @@
-#if 0
+#include "config.h"
+
+#ifdef WIN32_RAYTRACER
+
 #include <stdio.h>
 
 #include <Windows.h>
