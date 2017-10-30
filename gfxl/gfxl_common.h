@@ -15,14 +15,8 @@ typedef double		double64;
 
 namespace gfxl
 {
-	void ErrorSetCallback(void(*callback)(const char*));
-	void Error(const char* info);
-
-	struct Point
-	{
-		int x;
-		int y;
-	};
+	void SetMessageCallback(int(*callback)(const char*, va_list));
+	void Message(const char* msg, ...);
 }
 
 #endif

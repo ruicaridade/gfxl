@@ -1,17 +1,23 @@
 #include <gfxl_common.h>
+#include <cstdarg>
 
 namespace gfxl
 {
-	static void(*errorFunc)(const char*);
+	static int(*messageCallback)(const char*, va_list);
 
-	void ErrorSetCallback(void(*callback)(const char*))
+	void SetMessageCallback(int(*callback)(const char*, va_list))
 	{
-		errorFunc = callback;
+		messageCallback = callback;
 	}
 
-	void Error(const char* info)
+	void Message(const char* msg, ...)
 	{
-		if (errorFunc != nullptr)
-			errorFunc(info);
+		if (messageCallback)
+		{
+			va_list args;
+			va_start(args, msg);
+			messageCallback(msg, args);
+			va_end(args);
+		}
 	}
 }

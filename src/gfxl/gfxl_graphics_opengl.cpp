@@ -127,7 +127,7 @@ namespace gfxl
 		{
 			char info[1024];
 			glGetShaderInfoLog(id, 1024, nullptr, info);
-			Error(info);
+			Message(info);
 			glDeleteShader(id);
 			return false;
 		}
@@ -152,7 +152,7 @@ namespace gfxl
 		{
 			char info[1024];
 			glGetProgramInfoLog(shader->id, 1024, nullptr, info);
-			Error(info);
+			Message(info);
 			glDeleteProgram(shader->id);
 
 			for (int i = 0; i < shader->count; i++)
@@ -208,7 +208,7 @@ namespace gfxl
 		FILE *file = fopen(filename, "r");
 		if (file == nullptr)
 		{
-			Error("[ERROR] File not found");
+			Message("[ERROR] File not found");
 			return;
 		}
 
@@ -387,7 +387,7 @@ namespace gfxl
 
 		if (!data)
 		{
-			Error("Failed to load image file.");
+			Message("Failed to load image file.");
 			glDeleteTextures(1, &texture->id);
 			return;
 		}
@@ -421,7 +421,7 @@ namespace gfxl
 
 		if (data == nullptr)
 		{
-			Error("Failed to load cubemap face.");
+			Message("Failed to load cubemap face.");
 			return;
 		}
 

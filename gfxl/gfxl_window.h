@@ -20,15 +20,15 @@ namespace gfxl
 
 	struct Window;
 	
-	Window* CreateWindow(const WindowSettings& settings);
+	Window* CreateAndRunWindow(const WindowSettings& settings);
 
-	void WindowSwapBuffer(Window* window);
-	void WindowPollEvents(Window* window);
-	bool WindowShouldClose(Window* window);
-	void WindowTerminate(Window* window);
+	void Clear(float r, float g, float b);
+	void SwapBuffers(Window* window);
+	void PollEvents(Window* window);
+	bool ShouldClose(Window* window);
+	void Terminate(Window* window);
 
-	bool IsKeyPressed(int key);
-	bool IsKeyPressedThisFrame(int key);
+	void SetKeyCallback(void(*func)(unsigned char, bool));
 }
 
 #endif

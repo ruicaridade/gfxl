@@ -3,41 +3,57 @@
 #include <SDL2\SDL.h>
 #include <gfxl_common.h>
 
+#if GFXL_OPENGL
+#include <glad\glad.h>
+#endif
+
 namespace gfxl
 {
+	static void(*keyCallback)(unsigned char, bool);
+	
 	struct Window
 	{
-		SDL_Window* handle;
+#if GFXL_OPENGL
 		SDL_GLContext context;
+#endif
+
+		SDL_Window* handle;
 		bool shouldClose;
 
 		void(*keyCallback)(int);
 	};
 
-	Window* CreateWindow(const WindowSettings& settings)
+	Window* CreateAndRunWindow(const WindowSettings& settings)
 	{
 		if (SDL_Init(SDL_INIT_VIDEO) < 0)
 		{
-			Error("Failed to initialize window systems.");
+			Message("Failed to initialize window systems.");
 			return NULL;
 		}
 
+		uint32 flags = 0;
+#if GFXL_OPENGL
+		flags |= SDL_WINDOW_OPENGL;
+#endif
+
 		Window* window = (Window*)malloc(sizeof(Window));
+		window->shouldClose = false;
 		window->handle = SDL_CreateWindow(
 			settings.title,
 			SDL_WINDOWPOS_UNDEFINED,
 			SDL_WINDOWPOS_UNDEFINED,
 			settings.width,
 			settings.height,
-			SDL_WINDOW_OPENGL);
+			flags);
 
 		if (!window->handle)
 		{
-			Error("Failed to initialize window context.");
+			Message("Failed to initialize window context.");
 			free(window);
 			return NULL;
 		}
 
+#if GFXL_OPENGL
 		window->context = SDL_GL_CreateContext(window->handle);
 		
 		SDL_GL_SetAttribute(
@@ -57,30 +73,49 @@ namespace gfxl
 			settings.doubleBuffer);
 
 		SDL_GL_SetSwapInterval(settings.vsync);
+
+		if (!gladLoadGL())
+		{
+			Message("Failed to initialize OpenGL interface.");
+			Terminate(window);
+			return NULL;
+		}
+#endif
+
+		return window;
 	}
 
-	void WindowTerminate(Window* window)
+	void Terminate(Window* window)
 	{
-
+		SDL_GL_DeleteContext(window->context);
+		SDL_DestroyWindow(window->handle);
+		SDL_Quit();
 		free(window);
 	}
 
-	bool IsKeyPressed(int key)
+	void SetKeyCallback(void(*func)(unsigned char, bool))
 	{
-		return false;
+		keyCallback = func;
 	}
 
-	bool IsKeyPressedThisFrame(int key)
+	void Clear(float r, float g, float b)
 	{
-		return false;
+#if GFXL_OPENGL
+		glClear(
+			GL_COLOR_BUFFER_BIT | 
+			GL_DEPTH_BUFFER_BIT | 
+			GL_STENCIL_BUFFER_BIT);
+
+		glClearColor(r, g, b, 1.0f);
+#endif
 	}
 
-	void WindowSwapBuffer(Window* window)
+	void SwapBuffers(Window* window)
 	{
 		SDL_GL_SwapWindow(window->handle);
 	}
 
-	void WindowPollEvents(Window* window)
+	void PollEvents(Window* window)
 	{
 		SDL_Event event;
 		while (SDL_PollEvent(&event))
@@ -88,14 +123,19 @@ namespace gfxl
 			if (event.type == SDL_QUIT)
 				window->shouldClose = true;
 
-			if (event.type == SDL_KEYDOWN)
+			if (keyCallback && event.type == SDL_KEYDOWN)
 			{
-				
+				keyCallback(event.key.keysym.sym, true);
+			}
+
+			if (keyCallback && event.type == SDL_KEYUP)
+			{
+				keyCallback(event.key.keysym.sym, false);
 			}
 		}
 	}
 
-	bool WindowShouldClose(Window* window)
+	bool ShouldClose(Window* window)
 	{
 		return window->shouldClose;
 	}
