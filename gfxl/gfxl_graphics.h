@@ -73,7 +73,7 @@ namespace gfxl
 	void ShaderSetVar(const Shader* shader, const char* name, float value);
 	void ShaderSetVar(const Shader* shader, const char* name, int value);
 
-	void MeshLoadFromModel(Mesh* mesh, const char* filename);
+	void MeshLoadFromModelFile(Mesh* mesh, const char* filename);
 	void MeshUploadData(Mesh* mesh,
 		const Vertex* vertices, uint32 vertexCount,
 		const uint32* indices, uint32 indexCount);

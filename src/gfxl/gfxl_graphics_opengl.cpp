@@ -203,7 +203,7 @@ namespace gfxl
 		glUniform1i(location, value);
 	}
 
-	void MeshLoadFromModel(Mesh* mesh, const char * filename)
+	void MeshLoadFromModelFile(Mesh* mesh, const char * filename)
 	{
 		FILE *file = fopen(filename, "r");
 		if (file == nullptr)

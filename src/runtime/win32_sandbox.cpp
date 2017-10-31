@@ -1,5 +1,3 @@
-#include "config.h"
-
 #ifdef WIN32_SANDBOX
 
 #include <stdio.h>
@@ -31,7 +29,7 @@ static inline void ReloadBasicShader()
 	ShaderLoadAndCompile(basicShader, "assets/glsl/gfxl.vs", ShaderType::Vertex);
 	ShaderLoadAndCompile(basicShader, "assets/glsl/gfxl.fs", ShaderType::Fragment);
 	ShaderLink(basicShader);
-
+	
 	Bind(basicShader);
 
 	ShaderSetVar(basicShader, "LightCount", 1);
@@ -105,8 +103,8 @@ static inline bool Init()
 
 	ReloadBasicShader();
 
-	MeshLoadFromModel(sphere, "assets/sphere.obj");
-	MeshLoadFromModel(cube, "assets/cube.obj");
+	MeshLoadFromModelFile(sphere, "assets/sphere.obj");
+	MeshLoadFromModelFile(cube, "assets/cube.obj");
 
 	CubemapFromImageFiles(cubemap,
 		"assets/cubemaps/nissi/front.jpg",
